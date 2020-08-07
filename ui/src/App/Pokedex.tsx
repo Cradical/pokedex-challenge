@@ -137,7 +137,7 @@ const Content = styled.div<{ isOn?: boolean }>`
 const Pokedex: React.FC<{ children: (clickLink: Function) => any }> = ({
   children,
 }) => {
-  const [isOn, setIsOn] = React.useState(false)
+  const [isOn, setIsOn] = React.useState(true)
   const [isButtonPressed, setIsButtonPressed] = React.useState(false)
   const [isButtonReleased, setIsButtonReleased] = React.useState(false)
   const [isLinkClicked, setIsLinkClicked] = React.useState(false)

@@ -1,8 +1,8 @@
 import { ApolloServer, gql, IResolvers } from 'apollo-server'
 import sortBy from 'lodash/sortBy'
 import find from 'lodash/find'
+import filter from 'lodash/filter'
 import pokemon from './pokemon.json'
-
 interface Pokemon {
   id: string
   num: string
@@ -37,7 +37,7 @@ const typeDefs = gql`
   }
 
   type Query {
-    pokemonMany(skip: Int, limit: Int): [Pokemon!]!
+    pokemonMany(skip: Int, limit: Int, searchFilter: String): [Pokemon!]!
     pokemonOne(id: ID!): Pokemon
   }
 `
@@ -62,12 +62,24 @@ const resolvers: IResolvers<any, any> = {
   Query: {
     pokemonMany(
       _,
-      { skip = 0, limit = 999 }: { skip?: number; limit?: number }
+      {
+        skip = 0,
+        limit = 999,
+        searchFilter = '',
+      }: {
+        skip?: number
+        limit?: number
+        searchFilter?: string
+      }
     ): Pokemon[] {
-      return sortBy(pokemon, poke => parseInt(poke.id, 10)).slice(
-        skip,
-        limit + skip
-      )
+      if (searchFilter !== '') {
+        return filter(pokemon, poke => poke.name.includes(searchFilter))
+      } else {
+        return sortBy(pokemon, poke => parseInt(poke.id, 10)).slice(
+          skip,
+          limit + skip
+        )
+      }
     },
     pokemonOne(_, { id }: { id: string }): Pokemon {
       return (pokemon as Record<string, Pokemon>)[id]

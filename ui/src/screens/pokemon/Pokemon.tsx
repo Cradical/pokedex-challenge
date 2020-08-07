@@ -1,13 +1,20 @@
-import React from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
 import { RouteComponentProps, Link } from '@reach/router'
 import { useQuery, gql } from '@apollo/client'
 import { Container as NesContainer } from 'nes-react'
 
-const Container = styled(NesContainer)`
+import Search from 'components/Search'
+import TypeFilter from 'components/TypeFilter'
+
+const Wrapper = styled.div`
+  display: flex;
+`
+
+export const Container = styled(NesContainer)`
   && {
     background: white;
-    margin: 2rem 25%;
+    margin: 2rem 15%;
 
     ::after {
       z-index: unset;
@@ -47,7 +54,9 @@ const POKEMON_MANY = gql`
 const Pokemon: React.FC<RouteComponentProps & { clickLink: Function }> = ({
   clickLink,
 }) => {
+  const [resultList, setResultlist] = useState<any>(null)
   const { loading, error, data } = useQuery(POKEMON_MANY)
+
   const pokemonList:
     | Array<{ id: string; name: string; img: string; num: string }>
     | undefined = data?.pokemonMany
@@ -59,19 +68,33 @@ const Pokemon: React.FC<RouteComponentProps & { clickLink: Function }> = ({
     return <p>Error!</p>
   }
 
+  const generateLink = pokemon => {
+    return (
+      <Link to={pokemon.id} onMouseDown={clickLink as any}>
+        <ListItem>
+          <img src={pokemon.img} />
+          {pokemon.name} - {pokemon.num}
+        </ListItem>
+      </Link>
+    )
+  }
+
+  const renderList = () => {
+    if (resultList) {
+      return resultList.map(pokemon => generateLink(pokemon))
+    } else {
+      return pokemonList.map(pokemon => generateLink(pokemon))
+    }
+  }
+
   return (
-    <Container rounded>
-      <List>
-        {pokemonList.map(pokemon => (
-          <Link to={pokemon.id} onMouseDown={clickLink as any}>
-            <ListItem>
-              <img src={pokemon.img} />
-              {pokemon.name} - {pokemon.num}
-            </ListItem>
-          </Link>
-        ))}
-      </List>
-    </Container>
+    <Wrapper>
+      <TypeFilter />
+      <Container rounded>
+        <Search setResultList={setResultlist} />
+        <List>{renderList()}</List>
+      </Container>
+    </Wrapper>
   )
 }
 
