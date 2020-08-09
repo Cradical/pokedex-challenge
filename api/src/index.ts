@@ -37,7 +37,12 @@ const typeDefs = gql`
   }
 
   type Query {
-    pokemonMany(skip: Int, limit: Int, searchFilter: String): [Pokemon!]!
+    pokemonMany(
+      skip: Int
+      limit: Int
+      searchFilter: String
+      weaknessFilter: [String]
+    ): [Pokemon!]!
     pokemonOne(id: ID!): Pokemon
   }
 `
@@ -66,13 +71,40 @@ const resolvers: IResolvers<any, any> = {
         skip = 0,
         limit = 999,
         searchFilter = '',
+        weaknessFilter = [],
       }: {
         skip?: number
         limit?: number
         searchFilter?: string
+        weaknessFilter?: string[]
       }
     ): Pokemon[] {
-      if (searchFilter !== '') {
+      if (weaknessFilter.length) {
+        return filter(pokemon, poke => {
+          const characters: any = []
+          weaknessFilter.sort((a, b) => a.localeCompare(b))
+          for (let i = 0; i < weaknessFilter.length; i++) {
+            if (
+              weaknessFilter.length === 1 &&
+              poke.weaknesses.includes(weaknessFilter[i])
+            ) {
+              // return true
+              characters.push(poke)
+            }
+
+            if (
+              poke.weaknesses.includes(weaknessFilter[i]) &&
+              i > 0 &&
+              poke.weaknesses.includes(weaknessFilter[i - 1])
+            ) {
+              console.log(weaknessFilter[i])
+              // return true
+              characters.push(poke)
+            }
+          }
+          return characters
+        })
+      } else if (searchFilter !== '') {
         return filter(pokemon, poke => poke.name.includes(searchFilter))
       } else {
         return sortBy(pokemon, poke => parseInt(poke.id, 10)).slice(
