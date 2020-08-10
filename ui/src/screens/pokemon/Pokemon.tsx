@@ -5,7 +5,7 @@ import { useQuery, gql } from '@apollo/client'
 import { Container as NesContainer } from 'nes-react'
 
 import Search from 'components/Search'
-import TypeFilter from 'components/TypeFilter'
+// import TypeFilter from 'components/TypeFilter'
 
 const Wrapper = styled.div`
   display: flex;
@@ -89,7 +89,7 @@ const Pokemon: React.FC<RouteComponentProps & { clickLink: Function }> = ({
 
   return (
     <Wrapper>
-      <TypeFilter />
+      {/* <TypeFilter /> */}
       <Container rounded>
         <Search setResultList={setResultlist} />
         <List>{renderList()}</List>
