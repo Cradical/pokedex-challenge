@@ -37,8 +37,9 @@ const typeDefs = gql`
   }
 
   type Query {
-    pokemonMany(skip: Int, limit: Int, searchFilter: String): [Pokemon!]!
+    pokemonMany(skip: Int, limit: Int, type: String): [Pokemon!]!
     pokemonOne(id: ID!): Pokemon
+    searchPokemon(searchFilter: String): [Pokemon]!
   }
 `
 
@@ -65,24 +66,25 @@ const resolvers: IResolvers<any, any> = {
       {
         skip = 0,
         limit = 999,
-        searchFilter = '',
       }: {
         skip?: number
         limit?: number
-        searchFilter?: string
       }
     ): Pokemon[] {
-      if (searchFilter !== '') {
-        return filter(pokemon, poke => poke.name.includes(searchFilter))
-      } else {
-        return sortBy(pokemon, poke => parseInt(poke.id, 10)).slice(
-          skip,
-          limit + skip
-        )
-      }
+      return sortBy(pokemon, poke => parseInt(poke.id, 10)).slice(
+        skip,
+        limit + skip
+      )
     },
     pokemonOne(_, { id }: { id: string }): Pokemon {
       return (pokemon as Record<string, Pokemon>)[id]
+    },
+    searchPokemon(_, { searchFilter = '' }): Pokemon[] {
+      if (searchFilter !== '') {
+        return filter(pokemon, poke => poke.name.includes(searchFilter))
+      }
+
+      return []
     },
   },
 }

@@ -20,7 +20,7 @@ interface SearchProps {
 
 const POKEMON_SEARCH = gql`
   query($searchFilter: String) {
-    pokemonMany(searchFilter: $searchFilter) {
+    searchPokemon(searchFilter: $searchFilter) {
       id
       name
       num
@@ -34,12 +34,12 @@ const Search: React.FC<RouteComponentProps & SearchProps> = props => {
   const searchInput = useRef<HTMLInputElement | null>(null)
   const { setResultList } = props
   const { loading, error, data } = useQuery(POKEMON_SEARCH, {
-    variables: { searchFilter: searchFilter },
+    variables: { searchFilter },
   })
 
   const pokemonSearch:
     | Array<{ id: string; name: string; img: string; num: string }>
-    | undefined = data?.pokemonMany
+    | undefined = data?.searchPokemon
 
   const onChangeHandler = (): void => {
     if (!searchInput.current && searchInput.current.value === '') return
@@ -48,7 +48,9 @@ const Search: React.FC<RouteComponentProps & SearchProps> = props => {
     }, 500)
   }
 
-  setResultList(pokemonSearch)
+  if (data && !error) {
+    setResultList(pokemonSearch)
+  }
 
   return (
     <Container>
