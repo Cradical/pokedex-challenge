@@ -41,8 +41,18 @@ const ListItem = styled.li`
 `
 
 const POKEMON_MANY = gql`
-  query($skip: Int, $limit: Int) {
-    pokemonMany(skip: $skip, limit: $limit) {
+  query(
+    $skip: Int
+    $limit: Int
+    $typeFilter: [String]
+    $weaknessFilter: [String]
+  ) {
+    pokemonMany(
+      skip: $skip
+      limit: $limit
+      typeFilter: $typeFilter
+      weaknessFilter: $weaknessFilter
+    ) {
       id
       name
       num
@@ -54,7 +64,8 @@ const POKEMON_MANY = gql`
 const Pokemon: React.FC<RouteComponentProps & { clickLink: Function }> = ({
   clickLink,
 }) => {
-  const [resultList, setResultlist] = useState<any>(null)
+  const [filterResults, setFilterResults] = useState(null)
+  const [searchResultList, setSearchResultlist] = useState<any>(null)
   const { loading, error, data } = useQuery(POKEMON_MANY)
 
   const pokemonList:
@@ -79,20 +90,29 @@ const Pokemon: React.FC<RouteComponentProps & { clickLink: Function }> = ({
     )
   }
 
-  const renderList = () => {
-    if (resultList && resultList.length) {
-      return resultList.map(pokemon => generateLink(pokemon))
+  const renderSearchResultList = () => {
+    if (searchResultList && searchResultList.length) {
+      return searchResultList.map(pokemon => generateLink(pokemon))
     } else {
       return pokemonList.map(pokemon => generateLink(pokemon))
     }
   }
 
+  const renderFilterResultsList = () => {
+    if (filterResults && filterResults.length) {
+      return filterResults.map(pokemon => generateLink(pokemon))
+    } else if (filterResults && filterResults.length === 0) {
+      return <p>No Pokemon Match Your Selection</p>
+    }
+  }
+
   return (
     <Wrapper>
-      <TypeFilter />
+      <TypeFilter setFilterResults={setFilterResults} />
       <Container rounded>
-        <Search setResultList={setResultlist} />
-        <List>{renderList()}</List>
+        <Search searchResultList={setSearchResultlist} />
+        <List>{renderFilterResultsList()}</List>
+        {/* <List>{renderSearchResultList()}</List> */}
       </Container>
     </Wrapper>
   )

@@ -15,7 +15,7 @@ const Label = styled.label`
 `
 
 interface SearchProps {
-  setResultList: any
+  searchResultList: any
 }
 
 const POKEMON_SEARCH = gql`
@@ -32,7 +32,7 @@ const POKEMON_SEARCH = gql`
 const Search: React.FC<RouteComponentProps & SearchProps> = props => {
   const [searchFilter, setSearchFilter] = useState<string>('')
   const searchInput = useRef<HTMLInputElement | null>(null)
-  const { setResultList } = props
+  const { searchResultList } = props
   const { loading, error, data } = useQuery(POKEMON_SEARCH, {
     variables: { searchFilter },
   })
@@ -49,7 +49,7 @@ const Search: React.FC<RouteComponentProps & SearchProps> = props => {
   }
 
   if (data && !error) {
-    setResultList(pokemonSearch)
+    searchResultList(pokemonSearch)
   }
 
   return (

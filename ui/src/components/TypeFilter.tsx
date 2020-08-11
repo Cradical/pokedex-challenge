@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
+import { useQuery, gql } from '@apollo/client'
 
 const FilterContainer = styled.div`
   border: 3px solid black;
@@ -45,9 +46,31 @@ const weaknesses = [
   'Fairy',
 ]
 
-const TypeFilter = () => {
+const POKEMON_MANY = gql`
+  query($typeFilter: [String], $weaknessFilter: [String]) {
+    pokemonMany(typeFilter: $typeFilter, weaknessFilter: $weaknessFilter) {
+      id
+      name
+      num
+      img
+    }
+  }
+`
+
+const TypeFilter = (props: any) => {
   const [typeFilter, setTypeFilter] = useState([])
   const [weaknessFilter, setWeaknessFilter] = useState([])
+  const { loading, error, data } = useQuery(POKEMON_MANY, {
+    variables: { typeFilter, weaknessFilter },
+  })
+
+  const pokemonFilterList:
+    | Array<{ id: string; name: string; img: string; num: string }>
+    | undefined = data?.pokemonMany
+
+  if (data && !error) {
+    props.setFilterResults(pokemonFilterList)
+  }
 
   const handleWeaknessSelection = (event, weakness) => {
     if (event.target.checked) {

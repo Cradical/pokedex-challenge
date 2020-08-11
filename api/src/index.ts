@@ -37,7 +37,12 @@ const typeDefs = gql`
   }
 
   type Query {
-    pokemonMany(skip: Int, limit: Int, type: String): [Pokemon!]!
+    pokemonMany(
+      skip: Int
+      limit: Int
+      typeFilter: [String]
+      weaknessFilter: [String]
+    ): [Pokemon!]!
     pokemonOne(id: ID!): Pokemon
     searchPokemon(searchFilter: String): [Pokemon]!
   }
@@ -66,11 +71,46 @@ const resolvers: IResolvers<any, any> = {
       {
         skip = 0,
         limit = 999,
+        typeFilter = [],
+        weaknessFilter = [],
       }: {
         skip?: number
         limit?: number
+        typeFilter?: string[]
+        weaknessFilter?: string[]
       }
     ): Pokemon[] {
+      if (typeFilter.length && weaknessFilter.length) {
+        return filter(pokemon, poke => {
+          const typeMatch = (type: string) => {
+            return poke.types.includes(type)
+          }
+
+          const weaknessMatch = (weakness: string) => {
+            return poke.weaknesses.includes(weakness)
+          }
+
+          return (
+            typeFilter.every(typeMatch) && weaknessFilter.every(weaknessMatch)
+          )
+        })
+      } else if (typeFilter.length) {
+        return filter(pokemon, poke => {
+          const typeMatch = (type: string) => {
+            return poke.types.includes(type)
+          }
+
+          return typeFilter.every(typeMatch)
+        })
+      } else if (weaknessFilter.length) {
+        return filter(pokemon, poke => {
+          const weaknessMatch = (weakness: string) => {
+            return poke.weaknesses.includes(weakness)
+          }
+
+          return weaknessFilter.every(weaknessMatch)
+        })
+      }
       return sortBy(pokemon, poke => parseInt(poke.id, 10)).slice(
         skip,
         limit + skip
