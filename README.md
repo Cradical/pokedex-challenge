@@ -1,12 +1,3 @@
-# Notes for the evaluator
-
-What a great project this is! I didn't have experience writing any graphQL code prior to this! So, I spent quite a bit of time reading up on the docs as I was going along. I also hadn't used lodash prior but what a great utility! I just wanted to point out some things for improvement in this implementation:
-
-- I saw a potential opportunity for the Search component and the Pokemon display component to share the same query. I started down that path thinking it would be good to give knowledge of the user input in the Search component to the parent (Pokemon.tsx). I ran into some rendering issues in the Search component after the query ran because of re-rendering the results and how the input element was wired up. So, I left it a bit less eloquent to timebox it and move on with the rest of the challenge.
-- I also thought about writing a query to pull back all the possible Types and Weaknesses that are required for the filtering feature. I thought this was a much better implementation instead of just sifting through the very long json data file to see what was available as it wouldn't be feasible in a very large dataset. Then with the data brought back from querying the Types and Weaknesses you could dynamically build your filter list.
-- I resorted to hard coding some values based on what I saw in the json file and had ran into some issues with setting up the JS functions in the resolver to meet the filtering requirement listed in the readme. I think I ran out of brain juice here 🤯. I came up with a messy nested for loop (not included in the code as of 5pm Friday 8/7/2020) in a repl to filter the objects but I will see if something better comes to me in the evening.
-- I would be happy to chat more about the code and would be especially keen to do a bit of pairing. I would love to learn more.
-
 # The Challenge
 
 This repository is the source code for an incomplete, pretend "Pokédex" web app. It's a code challenge, the challenge being to finish the web app by implementing a few last minute major features in the UI and API.
